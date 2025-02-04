@@ -1,90 +1,3 @@
-// import express from 'express';
-// import { createUser, loginUser,getUserByEmail,googleLogin,getAllUsers,updateUser,approveUser } from '../controller/usercontroller.js';
-// import { authenticateJWT } from './authmiddleware.js';
-// import { renewSubscription } from '../controller/subscriptioncontroller.js';
-// import Stripe from 'stripe';
-// import dotenv from 'dotenv';
-// dotenv.config();
-
-
-// const router = express.Router();
-
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-
-// router.post('/create-payment-intent', async (req, res) => {
-//     const { subscriptionType, promocode } = req.body;
-
-//     try {
-//         let amount;
-//         if (subscriptionType === 'premium') {
-//             amount = 2000; // $20.00 in cents
-//         } else {
-//             amount = 0; // Free plan
-//         }
-
-//         if (promocode && promocode === 'DISCOUNT50') {
-//             amount = amount * 0.5; // 50% discount
-//         }
-
-//         const paymentIntent = await stripe.paymentIntents.create({
-//             amount: amount,
-//             currency: 'usd',
-//             payment_method_types: ['card'],
-//         });
-
-//         res.status(200).send({
-//             clientSecret: paymentIntent.client_secret,
-//             amount: amount / 100, // Send amount in dollars for display purposes
-//         });
-//     } catch (error) {
-//         console.error('Error creating payment intent:', error);
-//         res.status(500).json({ error: 'Payment intent creation failed', details: error.message });
-//     }
-// });
-
-
-
-//   router.post('/subscribe', async (req, res) => {
-//     const { userId, subscriptionType, paymentIntentId } = req.body;
-  
-//     try {
-//       // Retrieve the payment intent to verify the payment status
-//       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-  
-//       if (paymentIntent.status !== 'succeeded') {
-//         return res.status(400).json({ message: 'Payment not completed' });
-//       }
-  
-//       // Create or update the user's subscription
-//       const newEndDate = subscriptionType === 'premium'
-//         ? new Date(Date.now() + 1 * 30 * 24 * 60 * 60 * 1000) // 1 month for premium
-//         : new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000); // 3 months for basic (free)
-  
-//       const newSubscription = new Subscription({
-//         userId: userId,
-//         subscriptionType,
-//         subscriptionEndDate: newEndDate,
-//       });
-  
-//       await newSubscription.save();
-  
-//       // Update the user's subscription reference
-//       const existingUser = await user.findByIdAndUpdate(
-//         userId,
-//         { subscription: newSubscription._id },
-//         { new: true }
-//       );
-  
-//       res.status(200).json({ message: 'Subscription successful', user: existingUser });
-//     } catch (error) {
-//       console.error('Error processing subscription:', error);
-//       res.status(500).json({ error: 'Subscription failed', details: error.message });
-//     }
-//   });
-  
-
-
 import express from 'express';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
@@ -106,15 +19,15 @@ router.post('/create-payment-intent', async (req, res) => {
       return res.status(400).json({ message: 'Amount must be at least $0.50 USD' });
     }
 
+    // Creating a Payment Intent with card and PayPal as accepted payment methods
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInCents,
       currency: 'usd',
-      payment_method_types: ['card'],
+      payment_method_types: ['card', 'paypal'], // Adding PayPal as a payment method
     });
 
     console.log(`[DEBUG] Returning Payment Intent ID: ${paymentIntent.id}`);
-console.log(`[DEBUG] Returning Client Secret: ${paymentIntent.client_secret}`);
-
+    console.log(`[DEBUG] Returning Client Secret: ${paymentIntent.client_secret}`);
 
     console.log(`[LOG] Payment Intent Created:`, {
       id: paymentIntent.id,

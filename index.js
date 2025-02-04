@@ -7,6 +7,8 @@ import Stripe from 'stripe';
 import productRouter from './routes/productRoutes.js';
 import orderRoutes from './routes/orderroutes.js'; 
 import paymentRoutes from './routes/paymentroutes.js';
+import reviewRoutes from './routes/reviewroutes.js';
+import braintreepayment from './routes/braintreeroutes.js'
 
 dotenv.config();
 
@@ -25,6 +27,7 @@ app.use('/api',paymentRoutes)
 app.use('/api', userRoutes);
 app.use('/api', productRouter);
 app.use('/api', orderRoutes);
+app.use('/api', reviewRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');

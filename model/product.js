@@ -1,4 +1,6 @@
-import mongoose from "mongoose";
+// models/Product.js
+import mongoose from 'mongoose';
+
 
 const productSchema = new mongoose.Schema(
   {
@@ -35,10 +37,11 @@ const productSchema = new mongoose.Schema(
     images: {
       type: [String], // Array of strings to store image URLs or file paths
     },
+    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }], // Reference to Review schema
   },
   { timestamps: true }
 );
 
-const Product = mongoose.model("Product", productSchema);
+const Product = mongoose.model('Product', productSchema);
 
 export default Product;
